@@ -55,7 +55,7 @@ spring:
                 output:
                     destination: topic-jhipster
                 payment:
-                    destination: payment
+                    destination: paymentx
                     contentType: application/*+avro
                     producer:
                        useNativeEncoding: true
