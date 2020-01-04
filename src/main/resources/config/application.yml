@@ -249,4 +249,4 @@ braintree:
    merchantId: xhw6pfjdjbh249ms
    publicKey: 9gbgbk3ch9mwjb5s
    privateKey: 64e7d4fb49147bbb0f5e12690c8ab9b3
-   environment: sandboxs
+   environment: sandbox
