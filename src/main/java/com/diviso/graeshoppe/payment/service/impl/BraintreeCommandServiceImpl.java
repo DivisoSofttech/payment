@@ -27,6 +27,8 @@ public class BraintreeCommandServiceImpl implements BraintreeCommandService {
 		ClientTokenRequest clientTokenRequest = new ClientTokenRequest();
 		System.out.println("Gateway is "+braintreeGateway+" clientToken is "+braintreeGateway.clientToken());
 		String clientToken = braintreeGateway.clientToken().generate(clientTokenRequest);
+		System.out.println("method generate "+braintreeGateway.clientToken().generate(clientTokenRequest));
+		System.out.println(clientToken+" token is ");
 		return clientToken;
 	}
 
