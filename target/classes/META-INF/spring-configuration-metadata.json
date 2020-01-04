@@ -1,0 +1,39 @@
+{
+  "groups": [
+    {
+      "name": "application",
+      "type": "com.diviso.graeshoppe.payment.config.ApplicationProperties",
+      "sourceType": "com.diviso.graeshoppe.payment.config.ApplicationProperties"
+    },
+    {
+      "name": "kafka",
+      "type": "com.diviso.graeshoppe.payment.config.KafkaProperties",
+      "sourceType": "com.diviso.graeshoppe.payment.config.KafkaProperties"
+    },
+    {
+      "name": "spring.datasource.hikari",
+      "type": "javax.sql.DataSource",
+      "sourceType": "com.diviso.graeshoppe.payment.config.CloudDatabaseConfiguration",
+      "sourceMethod": "dataSource(org.springframework.cache.CacheManager)"
+    }
+  ],
+  "properties": [
+    {
+      "name": "kafka.boot-strap-servers",
+      "type": "java.lang.String",
+      "sourceType": "com.diviso.graeshoppe.payment.config.KafkaProperties",
+      "defaultValue": "localhost:9092"
+    },
+    {
+      "name": "kafka.consumer-props",
+      "type": "java.util.Map<java.lang.String,java.lang.Object>",
+      "sourceType": "com.diviso.graeshoppe.payment.config.KafkaProperties"
+    },
+    {
+      "name": "kafka.producer-props",
+      "type": "java.util.Map<java.lang.String,java.lang.Object>",
+      "sourceType": "com.diviso.graeshoppe.payment.config.KafkaProperties"
+    }
+  ],
+  "hints": []
+}

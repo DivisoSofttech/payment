@@ -1,17 +1,20 @@
 package com.diviso.graeshoppe.payment.web.rest;
-import com.diviso.graeshoppe.payment.model.ProcessPaymentRequest;
-import com.diviso.graeshoppe.payment.resource.CommandResource;
+
 import com.diviso.graeshoppe.payment.service.PaymentService;
 import com.diviso.graeshoppe.payment.web.rest.errors.BadRequestAlertException;
-import com.diviso.graeshoppe.payment.web.rest.util.HeaderUtil;
-import com.diviso.graeshoppe.payment.web.rest.util.PaginationUtil;
 import com.diviso.graeshoppe.payment.service.dto.PaymentDTO;
+
+import io.github.jhipster.web.util.HeaderUtil;
+import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,9 +23,12 @@ import java.net.URISyntaxException;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.StreamSupport;
+
+import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
- * REST controller for managing Payment.
+ * REST controller for managing {@link com.diviso.graeshoppe.payment.domain.Payment}.
  */
 @RestController
 @RequestMapping("/api")
@@ -32,6 +38,9 @@ public class PaymentResource {
 
     private static final String ENTITY_NAME = "paymentPayment";
 
+    @Value("${jhipster.clientApp.name}")
+    private String applicationName;
+
     private final PaymentService paymentService;
 
     public PaymentResource(PaymentService paymentService) {
@@ -39,11 +48,11 @@ public class PaymentResource {
     }
 
     /**
-     * POST  /payments : Create a new payment.
+     * {@code POST  /payments} : Create a new payment.
      *
-     * @param paymentDTO the paymentDTO to create
-     * @return the ResponseEntity with status 201 (Created) and with body the new paymentDTO, or with status 400 (Bad Request) if the payment has already an ID
-     * @throws URISyntaxException if the Location URI syntax is incorrect
+     * @param paymentDTO the paymentDTO to create.
+     * @return the {@link ResponseEntity} with status {@code 201 (Created)} and with body the new paymentDTO, or with status {@code 400 (Bad Request)} if the payment has already an ID.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/payments")
     public ResponseEntity<PaymentDTO> createPayment(@RequestBody PaymentDTO paymentDTO) throws URISyntaxException {
@@ -53,18 +62,18 @@ public class PaymentResource {
         }
         PaymentDTO result = paymentService.save(paymentDTO);
         return ResponseEntity.created(new URI("/api/payments/" + result.getId()))
-            .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+            .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * PUT  /payments : Updates an existing payment.
+     * {@code PUT  /payments} : Updates an existing payment.
      *
-     * @param paymentDTO the paymentDTO to update
-     * @return the ResponseEntity with status 200 (OK) and with body the updated paymentDTO,
-     * or with status 400 (Bad Request) if the paymentDTO is not valid,
-     * or with status 500 (Internal Server Error) if the paymentDTO couldn't be updated
-     * @throws URISyntaxException if the Location URI syntax is incorrect
+     * @param paymentDTO the paymentDTO to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated paymentDTO,
+     * or with status {@code 400 (Bad Request)} if the paymentDTO is not valid,
+     * or with status {@code 500 (Internal Server Error)} if the paymentDTO couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PutMapping("/payments")
     public ResponseEntity<PaymentDTO> updatePayment(@RequestBody PaymentDTO paymentDTO) throws URISyntaxException {
@@ -74,29 +83,31 @@ public class PaymentResource {
         }
         PaymentDTO result = paymentService.save(paymentDTO);
         return ResponseEntity.ok()
-            .headers(HeaderUtil.createEntityUpdateAlert(ENTITY_NAME, paymentDTO.getId().toString()))
+            .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, paymentDTO.getId().toString()))
             .body(result);
     }
 
     /**
-     * GET  /payments : get all the payments.
+     * {@code GET  /payments} : get all the payments.
      *
-     * @param pageable the pagination information
-     * @return the ResponseEntity with status 200 (OK) and the list of payments in body
+
+     * @param pageable the pagination information.
+
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of payments in body.
      */
     @GetMapping("/payments")
     public ResponseEntity<List<PaymentDTO>> getAllPayments(Pageable pageable) {
         log.debug("REST request to get a page of Payments");
         Page<PaymentDTO> page = paymentService.findAll(pageable);
-        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(page, "/api/payments");
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
     }
 
     /**
-     * GET  /payments/:id : get the "id" payment.
+     * {@code GET  /payments/:id} : get the "id" payment.
      *
-     * @param id the id of the paymentDTO to retrieve
-     * @return the ResponseEntity with status 200 (OK) and with body the paymentDTO, or with status 404 (Not Found)
+     * @param id the id of the paymentDTO to retrieve.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the paymentDTO, or with status {@code 404 (Not Found)}.
      */
     @GetMapping("/payments/{id}")
     public ResponseEntity<PaymentDTO> getPayment(@PathVariable Long id) {
@@ -106,38 +117,31 @@ public class PaymentResource {
     }
 
     /**
-     * DELETE  /payments/:id : delete the "id" payment.
+     * {@code DELETE  /payments/:id} : delete the "id" payment.
      *
-     * @param id the id of the paymentDTO to delete
-     * @return the ResponseEntity with status 200 (OK)
+     * @param id the id of the paymentDTO to delete.
+     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
      */
     @DeleteMapping("/payments/{id}")
     public ResponseEntity<Void> deletePayment(@PathVariable Long id) {
         log.debug("REST request to delete Payment : {}", id);
         paymentService.delete(id);
-        return ResponseEntity.ok().headers(HeaderUtil.createEntityDeletionAlert(ENTITY_NAME, id.toString())).build();
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
     }
 
     /**
-     * SEARCH  /_search/payments?query=:query : search for the payment corresponding
+     * {@code SEARCH  /_search/payments?query=:query} : search for the payment corresponding
      * to the query.
      *
-     * @param query the query of the payment search
-     * @param pageable the pagination information
-     * @return the result of the search
+     * @param query the query of the payment search.
+     * @param pageable the pagination information.
+     * @return the result of the search.
      */
     @GetMapping("/_search/payments")
     public ResponseEntity<List<PaymentDTO>> searchPayments(@RequestParam String query, Pageable pageable) {
         log.debug("REST request to search for a page of Payments for query {}", query);
         Page<PaymentDTO> page = paymentService.search(query, pageable);
-        HttpHeaders headers = PaginationUtil.generateSearchPaginationHttpHeaders(query, page, "/api/_search/payments");
+        HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
         return ResponseEntity.ok().headers(headers).body(page.getContent());
-    }
-
-    @PostMapping("/processPayment")
-    public CommandResource processPayment(@RequestBody ProcessPaymentRequest processPaymentRequest) {
-		log.info("Request to process the payment "+processPaymentRequest);
-    	return paymentService.processPayment(processPaymentRequest);
-    	
     }
 }

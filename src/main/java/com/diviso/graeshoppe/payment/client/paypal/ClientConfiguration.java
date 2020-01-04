@@ -16,16 +16,16 @@ import com.diviso.graeshoppe.payment.client.ExcludeFromComponentScan;
 @Configuration
 public class ClientConfiguration {
 
-	@Value("${security.oauth2.paypal.access-token-uri}")
+	@Value("${spring.security.oauth2.paypal.access-token-uri}")
 	private String accessTokenUri;
 
-	@Value("${security.oauth2.paypal.client-id}")
+	@Value("${spring.security.oauth2.paypal.client-id}")
 	private String clientId;
 
-	@Value("${security.oauth2.paypal.client-secret}")
+	@Value("${spring.security.oauth2.paypal.client-secret}")
 	private String clientSecret;
 
-	@Value("${security.oauth2.paypal.grantType}")
+	@Value("${spring.security.oauth2.paypal.grantType}")
 	private String grantType;
 
 	@Bean(name = "paypalOauth2RequestInterceptor")

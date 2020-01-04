@@ -1,15 +1,12 @@
 package com.diviso.graeshoppe.payment.domain;
-
-
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 
-import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.Objects;
 
 /**
  * A Payment.
@@ -17,16 +14,17 @@ import java.util.Objects;
 @Entity
 @Table(name = "payment")
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@Document(indexName = "payment")
+@org.springframework.data.elasticsearch.annotations.Document(indexName = "payment")
 public class Payment implements Serializable {
 
     private static final long serialVersionUID = 1L;
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @org.springframework.data.elasticsearch.annotations.Field(type = FieldType.Keyword)
     private Long id;
 
-    @Column(name = "jhi_ref")
+    @Column(name = "ref")
     private String ref;
 
     @Column(name = "payee")
@@ -217,19 +215,15 @@ public class Payment implements Serializable {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (!(o instanceof Payment)) {
             return false;
         }
-        Payment payment = (Payment) o;
-        if (payment.getId() == null || getId() == null) {
-            return false;
-        }
-        return Objects.equals(getId(), payment.getId());
+        return id != null && id.equals(((Payment) o).id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(getId());
+        return 31;
     }
 
     @Override

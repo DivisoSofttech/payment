@@ -1,8 +1,6 @@
 package com.diviso.graeshoppe.payment.service.impl;
 
 import com.diviso.graeshoppe.payment.service.NotificationService;
-import com.diviso.graeshoppe.notification.avro.Notification.Builder;
-import com.diviso.graeshoppe.payment.config.MessageBinderConfiguration;
 import com.diviso.graeshoppe.payment.domain.Notification;
 import com.diviso.graeshoppe.payment.repository.NotificationRepository;
 import com.diviso.graeshoppe.payment.repository.search.NotificationSearchRepository;
@@ -10,20 +8,18 @@ import com.diviso.graeshoppe.payment.service.dto.NotificationDTO;
 import com.diviso.graeshoppe.payment.service.mapper.NotificationMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.integration.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.ByteBuffer;
 import java.util.Optional;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
 /**
- * Service Implementation for managing Notification.
+ * Service Implementation for managing {@link Notification}.
  */
 @Service
 @Transactional
@@ -33,9 +29,6 @@ public class NotificationServiceImpl implements NotificationService {
 
     private final NotificationRepository notificationRepository;
 
-    @Autowired
-    private MessageBinderConfiguration messageChannel;
-    
     private final NotificationMapper notificationMapper;
 
     private final NotificationSearchRepository notificationSearchRepository;
@@ -49,8 +42,8 @@ public class NotificationServiceImpl implements NotificationService {
     /**
      * Save a notification.
      *
-     * @param notificationDTO the entity to save
-     * @return the persisted entity
+     * @param notificationDTO the entity to save.
+     * @return the persisted entity.
      */
     @Override
     public NotificationDTO save(NotificationDTO notificationDTO) {
@@ -62,28 +55,11 @@ public class NotificationServiceImpl implements NotificationService {
         return result;
     }
 
-    @Override
-    public Boolean publishNotificationToMessageBroker(NotificationDTO notification) {
-    	Builder messageBuilder =com.diviso.graeshoppe.notification.avro.Notification.newBuilder()
-    			.setDate(notification.getDate().toEpochMilli())
-    			.setId(notification.getId())
-    			.setMessage(notification.getMessage())
-    			.setTargetId(notification.getTargetId())
-    			.setReceiverId(notification.getReceiverId())
-    			.setType(notification.getType())
-    			.setImageContentType(notification.getImageContentType())
-    			.setTitle(notification.getTitle())
-    			.setStatus(notification.getStatus());
-    	if(notification.getImage()!=null) {
-    		messageBuilder.setImage(ByteBuffer.wrap(notification.getImage()));
-    	}
-		return messageChannel.notificationOut().send(MessageBuilder.withPayload(messageBuilder.build()).build());
-    }
     /**
      * Get all the notifications.
      *
-     * @param pageable the pagination information
-     * @return the list of entities
+     * @param pageable the pagination information.
+     * @return the list of entities.
      */
     @Override
     @Transactional(readOnly = true)
@@ -97,8 +73,8 @@ public class NotificationServiceImpl implements NotificationService {
     /**
      * Get one notification by id.
      *
-     * @param id the id of the entity
-     * @return the entity
+     * @param id the id of the entity.
+     * @return the entity.
      */
     @Override
     @Transactional(readOnly = true)
@@ -111,7 +87,7 @@ public class NotificationServiceImpl implements NotificationService {
     /**
      * Delete the notification by id.
      *
-     * @param id the id of the entity
+     * @param id the id of the entity.
      */
     @Override
     public void delete(Long id) {
@@ -123,9 +99,9 @@ public class NotificationServiceImpl implements NotificationService {
     /**
      * Search for the notification corresponding to the query.
      *
-     * @param query the query of the search
-     * @param pageable the pagination information
-     * @return the list of entities
+     * @param query the query of the search.
+     * @param pageable the pagination information.
+     * @return the list of entities.
      */
     @Override
     @Transactional(readOnly = true)
