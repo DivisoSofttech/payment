@@ -1,6 +1,8 @@
 package com.diviso.graeshoppe.payment.service.impl;
 
+import com.diviso.graeshoppe.payment.service.KafkaMessagingService;
 import com.diviso.graeshoppe.payment.service.NotificationService;
+import com.diviso.graeshoppe.notification.avro.Notification.Builder;
 import com.diviso.graeshoppe.payment.domain.Notification;
 import com.diviso.graeshoppe.payment.repository.NotificationRepository;
 import com.diviso.graeshoppe.payment.repository.search.NotificationSearchRepository;
@@ -8,13 +10,15 @@ import com.diviso.graeshoppe.payment.service.dto.NotificationDTO;
 import com.diviso.graeshoppe.payment.service.mapper.NotificationMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.nio.ByteBuffer;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 
 import static org.elasticsearch.index.query.QueryBuilders.*;
 
@@ -30,7 +34,8 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationRepository notificationRepository;
 
     private final NotificationMapper notificationMapper;
-
+    @Autowired
+	private KafkaMessagingService messagingService;
     private final NotificationSearchRepository notificationSearchRepository;
 
     public NotificationServiceImpl(NotificationRepository notificationRepository, NotificationMapper notificationMapper, NotificationSearchRepository notificationSearchRepository) {
@@ -69,6 +74,7 @@ public class NotificationServiceImpl implements NotificationService {
             .map(notificationMapper::toDto);
     }
 
+   
 
     /**
      * Get one notification by id.
@@ -110,4 +116,30 @@ public class NotificationServiceImpl implements NotificationService {
         return notificationSearchRepository.search(queryStringQuery(query), pageable)
             .map(notificationMapper::toDto);
     }
+
+	@Override
+	public void publishNotificationToMessageBroker(NotificationDTO notification) {
+		Builder messageBuilder =com.diviso.graeshoppe.notification.avro.Notification.newBuilder()
+    			.setDate(notification.getDate().toEpochMilli())
+    			.setId(notification.getId())
+    			.setMessage(notification.getMessage())
+    			.setTargetId(notification.getTargetId())
+    			.setReceiverId(notification.getReceiverId())
+    			.setType(notification.getType())
+    			.setImageContentType(notification.getImageContentType())
+    			.setTitle(notification.getTitle())
+    			.setStatus(notification.getStatus());
+    	if(notification.getImage()!=null) {
+    		messageBuilder.setImage(ByteBuffer.wrap(notification.getImage()));
+    	}
+    	try {
+			messagingService.publishNotification(messageBuilder.build());
+		} catch (ExecutionException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

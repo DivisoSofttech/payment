@@ -53,4 +53,6 @@ public interface NotificationService {
      * @return the list of entities.
      */
     Page<NotificationDTO> search(String query, Pageable pageable);
+
+	void publishNotificationToMessageBroker(NotificationDTO resultNotificationPayee);
 }
