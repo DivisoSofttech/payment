@@ -1,6 +1,7 @@
 package com.diviso.graeshoppe.payment.service.impl;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,12 +16,17 @@ import com.diviso.graeshoppe.payment.client.braintree.models.PaymentTransaction;
 import com.diviso.graeshoppe.payment.client.braintree.models.PaymentTransactionResponse;
 import com.diviso.graeshoppe.payment.client.braintree.models.RefundResponse;
 import com.diviso.graeshoppe.payment.service.BraintreeCommandService;
+import com.diviso.graeshoppe.payment.service.PaymentService;
+import com.diviso.graeshoppe.payment.service.dto.PaymentDTO;
 
 @Service
 public class BraintreeCommandServiceImpl implements BraintreeCommandService {
 
 	@Autowired
 	private BraintreeGateway braintreeGateway;
+
+	@Autowired
+	private PaymentService paymentService;
 
 	@Override
 	public String getClientToken() {
@@ -60,10 +66,21 @@ public class BraintreeCommandServiceImpl implements BraintreeCommandService {
 
 	@Override
 	public RefundResponse createRefund(String transactionId) {
-		Result<Transaction> result  = braintreeGateway.transaction().refund(transactionId);
-		RefundResponse refundResponse = new RefundResponse();
-		refundResponse.setTransactionId(result.getTransaction().getId());
-		return refundResponse;
+		Optional<PaymentDTO> payment = paymentService.findOne(Long.parseLong(transactionId));
+		if (payment.isPresent()) {
+			PaymentDTO data = payment.get();
+			if (data.getProvider().equalsIgnoreCase("braintree")) {
+				Result<Transaction> result = braintreeGateway.transaction().refund(data.getRef());
+				RefundResponse refundResponse = new RefundResponse();
+				refundResponse.setTransactionId(result.getTransaction().getId());
+				return refundResponse;
+			} else {
+				return null;
+			}
+		} else {
+			return null;
+		}
+
 	}
 
 }
