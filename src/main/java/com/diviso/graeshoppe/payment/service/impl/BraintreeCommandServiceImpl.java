@@ -75,9 +75,9 @@ public class BraintreeCommandServiceImpl implements BraintreeCommandService {
 			if (data.getProvider().equalsIgnoreCase("braintree")) {
 				log.info("Refunding payment is "+data);
 				Result<Transaction> result = braintreeGateway.transaction().refund(data.getRef());
-				log.info("Refund result  is "+result);
+				log.info("Refund result  is "+result.getTransaction().getRefundedTransactionId());
 				RefundResponse refundResponse = new RefundResponse();
-				refundResponse.setTransactionId(result.getTransaction().getId());
+				refundResponse.setTransactionId(result.getTransaction().getRefundedTransactionId());
 				return refundResponse;
 			} else {
 				return null;
