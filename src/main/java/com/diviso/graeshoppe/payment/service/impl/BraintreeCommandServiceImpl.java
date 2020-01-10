@@ -3,6 +3,8 @@ package com.diviso.graeshoppe.payment.service.impl;
 import java.math.BigDecimal;
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,7 @@ public class BraintreeCommandServiceImpl implements BraintreeCommandService {
 
 	@Autowired
 	private BraintreeGateway braintreeGateway;
+	private final Logger log = LoggerFactory.getLogger(BraintreeCommandServiceImpl.class);
 
 	@Autowired
 	private PaymentService paymentService;
@@ -70,6 +73,7 @@ public class BraintreeCommandServiceImpl implements BraintreeCommandService {
 		if (payment.isPresent()) {
 			PaymentDTO data = payment.get();
 			if (data.getProvider().equalsIgnoreCase("braintree")) {
+				log.info("Refunding payment is "+data);
 				Result<Transaction> result = braintreeGateway.transaction().refund(data.getRef());
 				RefundResponse refundResponse = new RefundResponse();
 				refundResponse.setTransactionId(result.getTransaction().getId());
