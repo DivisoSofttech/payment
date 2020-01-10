@@ -10,6 +10,6 @@ public interface BraintreeCommandService {
 
 	PaymentTransactionResponse createTransaction(PaymentTransaction paymentTransaction);
 
-	RefundResponse createRefund(String transactionId);
+	RefundResponse createRefund(String transactionId,Double amount);
 
 }

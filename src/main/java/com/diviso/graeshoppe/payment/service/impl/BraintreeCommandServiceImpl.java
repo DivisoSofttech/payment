@@ -68,19 +68,26 @@ public class BraintreeCommandServiceImpl implements BraintreeCommandService {
 	}
 
 	@Override
-	public RefundResponse createRefund(String transactionId) {
+	public RefundResponse createRefund(String transactionId,Double amount) {
+		BigDecimal amountToBeRefund =new BigDecimal(amount);
 		Optional<PaymentDTO> payment = paymentService.findOne(Long.parseLong(transactionId));
+		RefundResponse refundResponse = new RefundResponse();
 		if (payment.isPresent()) {
 			PaymentDTO data = payment.get();
 			if (data.getProvider().equalsIgnoreCase("braintree")) {
-				log.info("Refunding payment is " + data);
-				log.info("Transaction status of " + data.getRef() + " Status "
-						+ braintreeGateway.transaction().find(data.getRef()).getStatus().name());
-				Result<Transaction> result = braintreeGateway.transaction().refund(data.getRef());
-				log.info("Refund result  is " + result.getTarget().getRefundedTransactionId());
-				RefundResponse refundResponse = new RefundResponse();
-				refundResponse.setTransactionId(result.getTransaction().getRefundedTransactionId());
-				return refundResponse;
+				String status = braintreeGateway.transaction().find(data.getRef()).getStatus().name();
+				if (status.equalsIgnoreCase("SETTLED")) {
+					log.info("Refunding payment is " + data);
+					Result<Transaction> result = braintreeGateway.transaction().refund(data.getRef(),amountToBeRefund);
+					log.info("Refund result  is " + result.getTarget().getRefundedTransactionId());
+					refundResponse.setTransactionId(result.getTarget().getRefundedTransactionId());
+					refundResponse.setStatus("completed");
+					return refundResponse;
+				} else {
+					refundResponse.setStatus(status);
+					return refundResponse;
+				}
+
 			} else {
 				return null;
 			}

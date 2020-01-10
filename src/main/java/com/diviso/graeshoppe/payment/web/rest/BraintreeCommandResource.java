@@ -34,9 +34,9 @@ public class BraintreeCommandResource {
 		return new ResponseEntity<PaymentTransactionResponse>(response, HttpStatus.OK);
 	}
 	
-	@PostMapping("/refunds/{transactionId}")
-	public ResponseEntity<RefundResponse> createRefund(@PathVariable String transactionId){
-		RefundResponse refundResponse = braintreeService.createRefund(transactionId);
+	@PostMapping("/refunds/{transactionId}/{amount}")
+	public ResponseEntity<RefundResponse> createRefund(@PathVariable String transactionId,@PathVariable Double amount){
+		RefundResponse refundResponse = braintreeService.createRefund(transactionId,amount);
 		return new ResponseEntity<RefundResponse>(refundResponse, HttpStatus.OK);
 	}
 }
