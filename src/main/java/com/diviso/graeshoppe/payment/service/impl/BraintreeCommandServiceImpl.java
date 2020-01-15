@@ -79,6 +79,10 @@ public class BraintreeCommandServiceImpl implements BraintreeCommandService {
 				if (status.equalsIgnoreCase("SETTLED")) {
 					log.info("Refunding payment is " + data+" amountTobeRefunded "+amountToBeRefund);
 					Result<Transaction> result = braintreeGateway.transaction().refund(transactionId,amountToBeRefund);
+					log.info("Refund status is "+result.getMessage());
+					log.info("result is after refund "+result.getTarget());
+					log.info("Result refund is "+result);
+					log.info("Result transaction is "+result.getTransaction());
 					log.info("Refund result  is " + result.getTarget().getRefundedTransactionId());
 					refundResponse.setTransactionId(result.getTarget().getRefundedTransactionId());
 					refundResponse.setStatus("completed");
