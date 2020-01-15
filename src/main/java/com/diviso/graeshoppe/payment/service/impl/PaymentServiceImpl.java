@@ -201,4 +201,9 @@ public class PaymentServiceImpl implements PaymentService {
 		CommandResource commandResource = resourceAssembler.toResource(processInstanceId);
 		return commandResource;
 	}
+
+	@Override
+	public Optional<PaymentDTO> findByRef(String transactionId) {
+		return paymentRepository.findByRef(transactionId).map(paymentMapper::toDto);
+	}
 }

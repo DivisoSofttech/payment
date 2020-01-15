@@ -57,4 +57,6 @@ public interface PaymentService {
     Page<PaymentDTO> search(String query, Pageable pageable);
 
 	CommandResource processPayment(ProcessPaymentRequest processPaymentRequest);
+
+	Optional<PaymentDTO> findByRef(String transactionId);
 }

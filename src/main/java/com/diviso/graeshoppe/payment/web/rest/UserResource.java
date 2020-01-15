@@ -7,7 +7,6 @@ import com.diviso.graeshoppe.payment.security.AuthoritiesConstants;
 import com.diviso.graeshoppe.payment.service.UserService;
 import com.diviso.graeshoppe.payment.service.dto.UserDTO;
 
-import io.github.jhipster.web.util.HeaderUtil;
 import io.github.jhipster.web.util.PaginationUtil;
 import io.github.jhipster.web.util.ResponseUtil;
 
