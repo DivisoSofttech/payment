@@ -69,7 +69,7 @@ public class BraintreeCommandServiceImpl implements BraintreeCommandService {
 
 	@Override
 	public RefundResponse createRefund(String transactionId,Double amount) {
-		BigDecimal amountToBeRefund =new BigDecimal(amount);
+		BigDecimal amountToBeRefund =new BigDecimal(amount*100);
 		Optional<PaymentDTO> payment = paymentService.findByRef(transactionId);
 		RefundResponse refundResponse = new RefundResponse();
 		if (payment.isPresent()) {
