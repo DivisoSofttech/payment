@@ -83,8 +83,9 @@ public class BraintreeCommandServiceImpl implements BraintreeCommandService {
 					log.info("result is after refund "+result.getTarget());
 					log.info("Result refund is "+result);
 					log.info("Result transaction is "+result.getTransaction());
-					log.info("Refund result  is " + result.getTarget().getRefundedTransactionId());
-					refundResponse.setTransactionId(result.getTarget().getRefundedTransactionId());
+					log.info("RefundId result  is " + result.getTarget().getRefundId());
+					log.info("Refund getId result  is " + result.getTarget().getId());
+					refundResponse.setTransactionId(result.getTarget().getId());
 					refundResponse.setStatus("completed");
 					return refundResponse;
 				} else {
