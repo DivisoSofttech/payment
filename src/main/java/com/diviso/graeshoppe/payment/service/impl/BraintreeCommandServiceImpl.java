@@ -1,6 +1,7 @@
 package com.diviso.graeshoppe.payment.service.impl;
 
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -69,7 +70,7 @@ public class BraintreeCommandServiceImpl implements BraintreeCommandService {
 
 	@Override
 	public RefundResponse createRefund(String transactionId,Double amount) {
-		BigDecimal amountToBeRefund =new BigDecimal(36.8);
+		BigDecimal amountToBeRefund =BigDecimal.valueOf(amount);
 		Optional<PaymentDTO> payment = paymentService.findByRef(transactionId);
 		RefundResponse refundResponse = new RefundResponse();
 		if (payment.isPresent()) {
