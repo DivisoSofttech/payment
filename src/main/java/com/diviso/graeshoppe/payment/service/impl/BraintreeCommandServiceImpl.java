@@ -1,7 +1,6 @@
 package com.diviso.graeshoppe.payment.service.impl;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -49,19 +48,19 @@ public class BraintreeCommandServiceImpl implements BraintreeCommandService {
 		if (result.isSuccess()) {
 			Transaction transaction = result.getTarget();
 			paymentTransactionResponse.setTransactionId(transaction.getId());
-			System.out.println("Success!: " + transaction.getId());
+			log.info("Success!: " + transaction.getId());
 		} else if (result.getTransaction() != null) {
 			Transaction transaction = result.getTransaction();
-			System.out.println("Error processing transaction:");
-			System.out.println("  Status: " + transaction.getStatus());
-			System.out.println("  Code: " + transaction.getProcessorResponseCode());
-			System.out.println("  Text: " + transaction.getProcessorResponseText());
+			log.info("Error processing transaction:");
+			log.info("  Status: " + transaction.getStatus());
+			log.info("  Code: " + transaction.getProcessorResponseCode());
+			log.info("  Text: " + transaction.getProcessorResponseText());
 		} else {
 
 			for (ValidationError error : result.getErrors().getAllDeepValidationErrors()) {
-				System.out.println("Attribute: " + error.getAttribute());
-				System.out.println("  Code: " + error.getCode());
-				System.out.println("  Message: " + error.getMessage());
+				log.info("Attribute: " + error.getAttribute());
+				log.info("  Code: " + error.getCode());
+				log.info("  Message: " + error.getMessage());
 			}
 
 		}
