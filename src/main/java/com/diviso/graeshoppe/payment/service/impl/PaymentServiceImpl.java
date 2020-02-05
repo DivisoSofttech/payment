@@ -87,16 +87,6 @@ public class PaymentServiceImpl implements PaymentService {
 	}
 
 	private void sendNotification(PaymentDTO paymentDTO) {
-		NotificationDTO notificationToPayee = new NotificationDTO();
-		notificationToPayee.setDate(Instant.now());
-		notificationToPayee.setMessage("Congrats You've a new Order Request");
-		notificationToPayee.setTitle("Order Request");
-		notificationToPayee.setTargetId(paymentDTO.getTargetId());
-		notificationToPayee.setType("Order-Request");
-		notificationToPayee.setStatus("unread");
-		notificationToPayee.setReceiverId(paymentDTO.getPayee());
-		NotificationDTO resultNotificationPayee=notificationService.save(notificationToPayee);
-		notificationService.publishNotificationToMessageBroker(resultNotificationPayee);
 		NotificationDTO notificationToPayer = new NotificationDTO();
 		notificationToPayer.setDate(Instant.now());
 		notificationToPayer.setMessage("Dear customer,Your Order Has been placed successfully!");
